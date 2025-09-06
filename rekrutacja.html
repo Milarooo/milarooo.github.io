@@ -1,0 +1,601 @@
+<!DOCTYPE html>
+<html lang="pl">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <title>Rekrutacja do Fatui — Formularz zgłoszeniowy</title>
+    <meta
+      name="description"
+      content="Formularz rekrutacyjny do Fatui — wypełnij dane i dołącz CV."
+    />
+    <!--
+    INSTRUKCJA:
+    - Domyślnie musisz podmienić wartość zmiennej FORM_ACTION_URL w sekcji <script> na swój endpoint.
+      Przykłady:
+        * Formspree: https://formspree.io/f/yourFormId
+        * Netlify Forms: zostaw action="" i dodaj atrybut data-netlify="true" do <form> (wymaga deploy na Netlify)
+        * Jeśli chcesz wysyłać mailem przez usługę zewnętrzną - użyj ich dokumentacji (może wymagać klucza).
+    - Dla testów możesz ustawić FORM_ACTION_URL = "https://httpbin.org/post" (tylko do testów).
+  -->
+    <style>
+      /* Reset i baza */
+      :root {
+        --bg: #0f1724;
+        --card: #0b1220;
+        --accent: #7dd3fc;
+        --muted: #9ca3af;
+        --glass: rgba(255, 255, 255, 0.04);
+        --success: #10b981;
+        --danger: #ef4444;
+        --maxw: 980px;
+        --radius: 14px;
+        font-family: Inter, ui-sans-serif, system-ui, -apple-system, "Segoe UI",
+          Roboto, "Helvetica Neue", Arial;
+      }
+      * {
+        box-sizing: border-box;
+      }
+      html,
+      body {
+        height: 100%;
+      }
+      body {
+        margin: 0;
+        background: linear-gradient(
+            180deg,
+            rgba(6, 11, 20, 1) 0%,
+            rgba(10, 14, 20, 1) 100%
+          ),
+          url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="600" height="600"><defs><linearGradient id="g" x1="0" x2="1"><stop stop-color="%230b1220" offset="0"/><stop stop-color="%23061519" offset="1"/></linearGradient></defs><rect width="100%" height="100%" fill="url(%23g)"/></svg>')
+            no-repeat center/cover;
+        color: #e6eef8;
+        -webkit-font-smoothing: antialiased;
+        -moz-osx-font-smoothing: grayscale;
+        padding: 32px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 24px;
+      }
+
+      .container {
+        max-width: var(--maxw);
+        width: 100%;
+        display: grid;
+        grid-template-columns: 1fr 460px;
+        gap: 28px;
+      }
+
+      /* Lewa kolumna - info */
+      .panel {
+        background: linear-gradient(
+          180deg,
+          rgba(255, 255, 255, 0.02),
+          rgba(255, 255, 255, 0.01)
+        );
+        border-radius: var(--radius);
+        padding: 28px;
+        box-shadow: 0 6px 30px rgba(2, 6, 23, 0.6);
+        border: 1px solid rgba(255, 255, 255, 0.03);
+      }
+      .brand {
+        display: flex;
+        gap: 14px;
+        align-items: center;
+        margin-bottom: 18px;
+      }
+      .logo {
+        width: 68px;
+        height: 68px;
+        border-radius: 12px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        background: linear-gradient(
+          135deg,
+          rgba(125, 211, 252, 0.12),
+          rgba(125, 211, 252, 0.04)
+        );
+        border: 1px solid rgba(125, 211, 252, 0.12);
+        font-weight: 700;
+        font-size: 20px;
+        color: var(--accent);
+        letter-spacing: 0.6px;
+        box-shadow: inset 0 -8px 20px rgba(0, 0, 0, 0.45);
+      }
+      h1 {
+        margin: 0;
+        font-size: 22px;
+        line-height: 1.05;
+      }
+      p.lead {
+        margin: 12px 0 20px 0;
+        color: var(--muted);
+      }
+
+      .benefits {
+        display: grid;
+        gap: 10px;
+        margin-top: 8px;
+      }
+      .benefit {
+        display: flex;
+        gap: 12px;
+        align-items: flex-start;
+      }
+      .bullet {
+        min-width: 36px;
+        height: 36px;
+        border-radius: 8px;
+        background: var(--glass);
+        display: grid;
+        place-items: center;
+        color: var(--accent);
+        font-weight: 600;
+      }
+      .muted {
+        color: var(--muted);
+        font-size: 14px;
+      }
+
+      /* Prawa kolumna - form */
+      .card {
+        background: linear-gradient(
+          180deg,
+          rgba(255, 255, 255, 0.02),
+          rgba(255, 255, 255, 0.01)
+        );
+        border-radius: var(--radius);
+        padding: 22px;
+        border: 1px solid rgba(255, 255, 255, 0.04);
+        box-shadow: 0 10px 40px rgba(2, 6, 23, 0.6);
+      }
+      form {
+        display: flex;
+        flex-direction: column;
+        gap: 12px;
+      }
+      label {
+        font-size: 13px;
+        color: var(--muted);
+        display: block;
+        margin-bottom: 6px;
+      }
+      .input,
+      .select,
+      .textarea {
+        width: 100%;
+        padding: 12px 14px;
+        border-radius: 10px;
+        background: transparent;
+        border: 1px solid rgba(255, 255, 255, 0.06);
+        color: inherit;
+        outline: none;
+        font-size: 15px;
+        transition: all 0.12s ease;
+        box-shadow: 0 4px 14px rgba(2, 6, 23, 0.45) inset;
+      }
+      .input:focus,
+      .select:focus,
+      .textarea:focus {
+        border-color: rgba(125, 211, 252, 0.45);
+        transform: translateY(-1px);
+        box-shadow: 0 10px 30px rgba(13, 35, 61, 0.45),
+          0 0 0 4px rgba(125, 211, 252, 0.06);
+      }
+      .row {
+        display: flex;
+        gap: 10px;
+      }
+      .col {
+        flex: 1;
+      }
+
+      .checkboxes {
+        display: flex;
+        flex-direction: column;
+        gap: 6px;
+      }
+      .checkbox {
+        display: flex;
+        gap: 10px;
+        align-items: center;
+        font-size: 14px;
+        color: var(--muted);
+      }
+      .file-input {
+        display: flex;
+        gap: 10px;
+        align-items: center;
+      }
+      .file-btn {
+        padding: 8px 12px;
+        border-radius: 10px;
+        border: 1px solid rgba(255, 255, 255, 0.06);
+        background: transparent;
+        cursor: pointer;
+      }
+      .small {
+        font-size: 13px;
+        color: var(--muted);
+      }
+
+      .actions {
+        display: flex;
+        gap: 10px;
+        align-items: center;
+        margin-top: 6px;
+      }
+      .btn {
+        padding: 12px 14px;
+        border-radius: 10px;
+        border: none;
+        cursor: pointer;
+        font-weight: 600;
+        background: linear-gradient(90deg, var(--accent), #60a5fa);
+        color: #06202b;
+        box-shadow: 0 8px 24px rgba(96, 165, 250, 0.12);
+      }
+      .btn.ghost {
+        background: transparent;
+        border: 1px solid rgba(255, 255, 255, 0.06);
+        color: var(--muted);
+        font-weight: 600;
+      }
+      .status {
+        padding: 10px 12px;
+        border-radius: 10px;
+        font-size: 14px;
+      }
+      .status.success {
+        background: linear-gradient(
+          90deg,
+          rgba(16, 185, 129, 0.12),
+          rgba(16, 185, 129, 0.06)
+        );
+        border: 1px solid rgba(16, 185, 129, 0.12);
+        color: var(--success);
+      }
+      .status.error {
+        background: linear-gradient(
+          90deg,
+          rgba(239, 68, 68, 0.06),
+          rgba(239, 68, 68, 0.03)
+        );
+        border: 1px solid rgba(239, 68, 68, 0.08);
+        color: var(--danger);
+      }
+
+      footer.note {
+        opacity: 0.9;
+        margin-top: 14px;
+        color: var(--muted);
+        font-size: 13px;
+      }
+
+      /* Responsive */
+      @media (max-width: 980px) {
+        .container {
+          grid-template-columns: 1fr;
+          padding: 0;
+        }
+        body {
+          padding: 18px;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <div class="container" role="main">
+      <!-- Informacyjny panel -->
+      <section class="panel" aria-labelledby="title">
+        <div class="brand">
+          <div class="logo" aria-hidden="true">F</div>
+          <div>
+            <h1 id="title">
+              Rekrutacja do <span style="color: var(--accent)">Fatui</span>
+            </h1>
+            <p class="lead">
+              Zgłoś się do naszej organizacji — wypełnij formularz, dołącz CV i
+              napisz, dlaczego to właśnie Ty.
+            </p>
+          </div>
+        </div>
+
+        <div class="benefits" aria-hidden="false">
+          <div class="benefit">
+            <div class="bullet">01</div>
+            <div>
+              <strong>Prosty formularz</strong>
+              <div class="muted">Wypełnij dane kontaktowe i doświadczenie.</div>
+            </div>
+          </div>
+          <div class="benefit">
+            <div class="bullet">02</div>
+            <div>
+              <strong>Upload CV</strong>
+              <div class="muted">
+                Możliwość dodania pliku CV (zależnie od backendu).
+              </div>
+            </div>
+          </div>
+          <div class="benefit">
+            <div class="bullet">03</div>
+            <div>
+              <strong>Automatyczne powiadomienia</strong>
+              <div class="muted">
+                Powiadomienia e-mail po poprawnej konfiguracji endpointu.
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <footer class="note" aria-hidden="true">
+          Uwaga: Formularz wymaga endpointu (np. Formspree). Zobacz komentarz w
+          kodzie.
+        </footer>
+      </section>
+
+      <!-- Formularz -->
+      <aside class="card" aria-labelledby="formTitle">
+        <h2 id="formTitle" style="margin: 0 0 8px 0">Formularz zgłoszeniowy</h2>
+        <form id="applyForm" novalidate>
+          <div>
+            <label for="fullname">Imię i nazwisko</label>
+            <input
+              id="fullname"
+              name="fullname"
+              class="input"
+              type="text"
+              required
+              minlength="2"
+              placeholder="Jan Kowalski"
+            />
+          </div>
+
+          <div class="row">
+            <div class="col">
+              <label for="email">E-mail</label>
+              <input
+                id="email"
+                name="email"
+                class="input"
+                type="email"
+                required
+                placeholder="jan@example.com"
+              />
+            </div>
+            <div class="col">
+              <label for="phone">Telefon (opcjonalnie)</label>
+              <input
+                id="phone"
+                name="phone"
+                class="input"
+                type="tel"
+                placeholder="+48 123 456 789"
+              />
+            </div>
+          </div>
+
+          <div>
+            <label for="region">Region / Miasto</label>
+            <input
+              id="region"
+              name="region"
+              class="input"
+              type="text"
+              placeholder="Mondstadt / Liyue / Inazuma"
+            />
+          </div>
+
+          <div>
+            <label>Umiejętności / Role (zaznacz)</label>
+            <div class="checkboxes" role="group" aria-label="Umiejętności">
+              <label class="checkbox"
+                ><input type="checkbox" name="skills" value="analiza" />
+                <span class="small">Analiza</span></label
+              >
+              <label class="checkbox"
+                ><input type="checkbox" name="skills" value="bojowe" />
+                <span class="small">Bojowe</span></label
+              >
+              <label class="checkbox"
+                ><input type="checkbox" name="skills" value="taktyka" />
+                <span class="small">Taktyka / Strategia</span></label
+              >
+              <label class="checkbox"
+                ><input type="checkbox" name="skills" value="logistyka" />
+                <span class="small">Logistyka</span></label
+              >
+              <label class="checkbox"
+                ><input type="checkbox" name="skills" value="inne" />
+                <span class="small">Inne (opisz w polu niżej)</span></label
+              >
+            </div>
+          </div>
+
+          <div>
+            <label for="motivation">Dlaczego chcesz dołączyć? (krótko)</label>
+            <textarea
+              id="motivation"
+              name="motivation"
+              class="textarea"
+              rows="4"
+              maxlength="1200"
+              placeholder="Napisz dlaczego chcesz dołączyć..."
+            ></textarea>
+          </div>
+
+          <div>
+            <label for="cv">Dołącz swoje zdjęcie (NIEopcjonalnie)</label>
+            <div class="file-input">
+              <input
+                id="cv"
+                name="cv"
+                class="input"
+                type="file"
+                accept=".pdf,.doc,.docx"
+              />
+              <button
+                type="button"
+                id="clearFile"
+                class="file-btn"
+                title="Usuń wybrany plik"
+              >
+                ✖
+              </button>
+            </div>
+            <div
+              id="fileName"
+              class="small"
+              aria-live="polite"
+              style="margin-top: 6px; color: var(--muted)"
+            ></div>
+          </div>
+
+          <div class="actions">
+            <button class="btn" type="submit" id="submitBtn">
+              Wyślij zgłoszenie
+            </button>
+            <button class="btn ghost" type="button" id="resetBtn">
+              Wyczyść
+            </button>
+          </div>
+
+          <div id="status" style="margin-top: 12px" aria-live="polite"></div>
+        </form>
+      </aside>
+    </div>
+
+    <script>
+      (function () {
+        // ======= KONFIGURACJA =======
+        // Podmień FORM_ACTION_URL na swój endpoint (Formspree lub inny).
+        // Przykład Formspree: "https://formspree.io/f/yourFormId"
+        const FORM_ACTION_URL = "https://formspree.io/f/mnnbljyb"; // <-- podmień tu
+        const form = document.getElementById("applyForm");
+        const statusBox = document.getElementById("status");
+        const submitBtn = document.getElementById("submitBtn");
+        const resetBtn = document.getElementById("resetBtn");
+        const clearFileBtn = document.getElementById("clearFile");
+        const cvInput = document.getElementById("cv");
+        const fileNameBox = document.getElementById("fileName");
+
+        // Wyświetl nazwę pliku
+        cvInput.addEventListener("change", () => {
+          if (cvInput.files && cvInput.files.length) {
+            fileNameBox.textContent = "Wybrano: " + cvInput.files[0].name;
+          } else {
+            fileNameBox.textContent = "";
+          }
+        });
+        clearFileBtn.addEventListener("click", () => {
+          cvInput.value = "";
+          fileNameBox.textContent = "";
+        });
+
+        // Reset form
+        resetBtn.addEventListener("click", () => {
+          form.reset();
+          fileNameBox.textContent = "";
+          statusBox.innerHTML = "";
+        });
+
+        // Utility: serialize form to FormData (supports file)
+        function collectFormData(formEl) {
+          const fd = new FormData();
+          fd.append("fullname", formEl.fullname.value.trim());
+          fd.append("email", formEl.email.value.trim());
+          fd.append("phone", formEl.phone.value.trim());
+          fd.append("region", formEl.region.value.trim());
+          fd.append("motivation", formEl.motivation.value.trim());
+
+          // skills (checkboxes)
+          const skills = Array.from(
+            formEl.querySelectorAll('input[name="skills"]:checked')
+          ).map((i) => i.value);
+          fd.append("skills", skills.join(", "));
+
+          // dołącz plik jeśli jest
+          if (formEl.cv.files && formEl.cv.files[0]) {
+            fd.append("cv", formEl.cv.files[0], formEl.cv.files[0].name);
+          }
+          return fd;
+        }
+
+        // Walidacja prostsza (HTML5 robi większość)
+        function validate() {
+          // Example: ensure name and email
+          if (
+            !form.fullname.value.trim() ||
+            form.fullname.value.trim().length < 2
+          ) {
+            return "Wpisz poprawne imię i nazwisko (min 2 znaki).";
+          }
+          if (!form.email.value.trim()) {
+            return "Wpisz adres e-mail.";
+          }
+          // opcjonalnie więcej walidacji...
+          return null;
+        }
+
+        // Obsługa wysyłki przez fetch
+        form.addEventListener("submit", async (e) => {
+          e.preventDefault();
+          statusBox.innerHTML = "";
+          const v = validate();
+          if (v) {
+            statusBox.innerHTML = '<div class="status error">' + v + "</div>";
+            return;
+          }
+
+          submitBtn.disabled = true;
+          submitBtn.textContent = "Wysyłanie...";
+
+          try {
+            // Jeśli nie ustawiłeś FORM_ACTION_URL poproś użytkownika o konfigurację
+            if (!FORM_ACTION_URL || FORM_ACTION_URL.includes("yourFormId")) {
+              throw new Error(
+                "Formularz nie został skonfigurowany. Podmień FORM_ACTION_URL w kodzie na swój endpoint (np. Formspree)."
+              );
+            }
+
+            const fd = collectFormData(form);
+
+            // fetch POST
+            const res = await fetch(FORM_ACTION_URL, {
+              method: "POST",
+              body: fd,
+              // Jeżeli Twój serwis wymaga JSON, musisz serializować i ewentualnie obsłużyć pliki inaczej.
+            });
+
+            if (res.ok) {
+              statusBox.innerHTML =
+                '<div class="status success">Dziękujemy! Twoje zgłoszenie zostało wysłane.</div>';
+              form.reset();
+              fileNameBox.textContent = "";
+            } else {
+              // Jeśli serwis zwraca tekst lub JSON z błędem, pokaż go
+              const text = await res.text();
+              statusBox.innerHTML =
+                '<div class="status error">Błąd przy wysyłce: ' +
+                (text || res.statusText) +
+                "</div>";
+            }
+          } catch (err) {
+            statusBox.innerHTML =
+              '<div class="status error">' +
+              (err.message || "Nieznany błąd") +
+              "</div>";
+            console.error(err);
+          } finally {
+            submitBtn.disabled = false;
+            submitBtn.textContent = "Wyślij zgłoszenie";
+          }
+        });
+
+        // Drobne usprawnienia: wysyłanie klawiszem Enter w textarea nie powinno submitować — standardowe.
+      })();
+    </script>
+  </body>
+</html>
