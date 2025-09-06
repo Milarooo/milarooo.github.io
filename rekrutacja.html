@@ -307,16 +307,14 @@
             <div class="bullet">01</div>
             <div>
               <strong>Prosty formularz</strong>
-              <div class="muted">Wypełnij dane kontaktowe i doświadczenie.</div>
+              <div class="muted">Wypełnij dane kontaktowe.</div>
             </div>
           </div>
           <div class="benefit">
             <div class="bullet">02</div>
             <div>
               <strong>Upload CV</strong>
-              <div class="muted">
-                Możliwość dodania pliku CV (zależnie od backendu).
-              </div>
+              <div class="muted">Możliwość dodania zdjęcia.</div>
             </div>
           </div>
           <div class="benefit">
@@ -324,15 +322,15 @@
             <div>
               <strong>Automatyczne powiadomienia</strong>
               <div class="muted">
-                Powiadomienia e-mail po poprawnej konfiguracji endpointu.
+                Jeden z członków organizacji rozpatrzy twoje zgłoszenie, czekaj
+                na odpowiedź.
               </div>
             </div>
           </div>
         </div>
 
         <footer class="note" aria-hidden="true">
-          Uwaga: Formularz wymaga endpointu (np. Formspree). Zobacz komentarz w
-          kodzie.
+          Uwaga: Odpowiedź na zgłoszenie może zająć do kilku dni.
         </footer>
       </section>
 
@@ -415,7 +413,10 @@
           </div>
 
           <div>
-            <label for="motivation">Dlaczego chcesz dołączyć? (krótko)</label>
+            <label for="motivation"
+              >Dlaczego chcesz dołączyć? (opisz dokładnie, dodaj tytuł jaki
+              chcesz mieć oraz rangę na która aplikujesz)</label
+            >
             <textarea
               id="motivation"
               name="motivation"
@@ -469,10 +470,7 @@
 
     <script>
       (function () {
-        // ======= KONFIGURACJA =======
-        // Podmień FORM_ACTION_URL na swój endpoint (Formspree lub inny).
-        // Przykład Formspree: "https://formspree.io/f/yourFormId"
-        const FORM_ACTION_URL = "https://formspree.io/f/mnnbljyb"; // <-- podmień tu
+        const FORM_ACTION_URL = "https://formspree.io/f/mnnbljyb";
         const form = document.getElementById("applyForm");
         const statusBox = document.getElementById("status");
         const submitBtn = document.getElementById("submitBtn");
@@ -501,7 +499,6 @@
           statusBox.innerHTML = "";
         });
 
-        // Utility: serialize form to FormData (supports file)
         function collectFormData(formEl) {
           const fd = new FormData();
           fd.append("fullname", formEl.fullname.value.trim());
